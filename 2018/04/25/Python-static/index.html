@@ -71,7 +71,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="Python, coding," />
 
 
 
@@ -87,15 +87,24 @@
 
 
 
-<meta name="description" content="做个法师，哪怕是最蹩脚的法师。">
-<meta property="og:type" content="website">
-<meta property="og:title" content="The Dirac Sea">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta name="description" content="Python中并不像Java或者C++一样有原生支持的static关键字，那么我们要如何定义一个class的static variable或是static method呢？
+我在Google上搜了一下，结合自己的一些理解，这里给出一些实现static关键字的方式，并且给出了一定的解释。下面的所有代码均在Python3.6中调试，2.7中的实现会略有不同。
+0. Python的类变量Python类变">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python Static 变量和方法">
+<meta property="og:url" content="http://yoursite.com/2018/04/25/Python-static/index.html">
 <meta property="og:site_name" content="The Dirac Sea">
-<meta property="og:description" content="做个法师，哪怕是最蹩脚的法师。">
+<meta property="og:description" content="Python中并不像Java或者C++一样有原生支持的static关键字，那么我们要如何定义一个class的static variable或是static method呢？
+我在Google上搜了一下，结合自己的一些理解，这里给出一些实现static关键字的方式，并且给出了一定的解释。下面的所有代码均在Python3.6中调试，2.7中的实现会略有不同。
+0. Python的类变量Python类变">
+<meta property="og:image" content="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png">
+<meta property="og:updated_time" content="2018-04-25T05:29:40.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="The Dirac Sea">
-<meta name="twitter:description" content="做个法师，哪怕是最蹩脚的法师。">
+<meta name="twitter:title" content="Python Static 变量和方法">
+<meta name="twitter:description" content="Python中并不像Java或者C++一样有原生支持的static关键字，那么我们要如何定义一个class的static variable或是static method呢？
+我在Google上搜了一下，结合自己的一些理解，这里给出一些实现static关键字的方式，并且给出了一定的解释。下面的所有代码均在Python3.6中调试，2.7中的实现会略有不同。
+0. Python的类变量Python类变">
+<meta name="twitter:image" content="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png">
 
 
 
@@ -123,13 +132,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/"/>
+  <link rel="canonical" href="http://yoursite.com/2018/04/25/Python-static/"/>
 
 
 
 
 
-  <title> The Dirac Sea </title>
+  <title> Python Static 变量和方法 | The Dirac Sea </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="default">
@@ -154,9 +163,7 @@
     
   
 
-  <div class="container one-collumn sidebar-position-left 
-   page-home 
- ">
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -239,9 +246,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -271,10 +278,7 @@
             
             
               
-                
-                <a class="post-title-link" href="/2018/04/25/Python-static/" itemprop="url">
-                  Python Static 变量和方法
-                </a>
+                Python Static 变量和方法
               
             
           </h1>
@@ -325,9 +329,7 @@
       
 
       
-        
-          
-            <p>Python中并不像Java或者C++一样有原生支持的<strong>static</strong>关键字，那么我们要如何定义一个class的static variable或是static method呢？</p>
+        <p>Python中并不像Java或者C++一样有原生支持的<strong>static</strong>关键字，那么我们要如何定义一个class的static variable或是static method呢？</p>
 <p>我在Google上搜了一下，结合自己的一些理解，这里给出一些实现static关键字的方式，并且给出了一定的解释。下面的所有代码均在<strong>Python3.6</strong>中调试，2.7中的实现会略有不同。</p>
 <h2 id="0-Python的类变量"><a href="#0-Python的类变量" class="headerlink" title="0. Python的类变量"></a>0. Python的类变量</h2><p>Python类变量的行为类似于Java中的static变量，但是还是有一些小的区别。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span><span class="params">(object)</span>:</span></div><div class="line">	count = <span class="number">1</span></div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">def</span> <span class="title">bar</span><span class="params">(self, x)</span>:</span></div><div class="line">		count += x</div></pre></td></tr></table></figure>
@@ -369,335 +371,66 @@
 <hr>
 <p><a rel="external" href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png"></a><br>This work is licensed under a <a rel="external" href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>.</p>
 
-          
+      
+    </div>
+
+    <div>
+      
         
+
       
     </div>
 
     <div>
       
-    </div>
+        
 
-    <div>
       
     </div>
 
 
     <footer class="post-footer">
       
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/04/18/Download-Google-Docs/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="F0rge1cE">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Avatar.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="The Dirac Sea">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2018/04/18/Download-Google-Docs/" itemprop="url">
-                  Jump Over the Export Restriction of Google Docs
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-04-18T13:16:33-04:00">
-                2018-04-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
+        <div class="post-tags">
           
-
+            <a href="/tags/Python-coding/" rel="tag"># Python, coding</a>
           
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
         </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
         
-          
-            <!--# Jump Over the Export Restriction of Google Docs
--->
-<p><strong>Disclaimer: This article is for technical exchanges only. The author is not responsible for any kind of misusage or copyright infringement.</strong></p>
-<p>This is a simple step-by-step tutorial that helps you to generate <strong>PDF</strong> version of Google Docs that are set not to be exported.</p>
-<h2 id="Prerequisites"><a href="#Prerequisites" class="headerlink" title="Prerequisites:"></a>Prerequisites:</h2><ul>
-<li>Mac OS with Safari installed (Not tested on Windows or Linux)</li>
-<li><strong>No</strong> programming or computer background required.</li>
-</ul>
-<h2 id="What-happened-amp-Why"><a href="#What-happened-amp-Why" class="headerlink" title="What happened &amp; Why"></a>What happened &amp; Why</h2><p>Google Docs allows the file owners set their not to be exported. Such file will not be able to save/print/export in a normal approach.</p>
-<!--![setting](/Picture4.png)
--->
-<img src="/2018/04/18/Download-Google-Docs/Picture4.png" alt="setting" title="setting">
-<p>I have seen many people taking screenshots instead. Obviously it is the worst solution to this problem. For example, you cannot perform searching, selecting or copying/pasting on pictures.</p>
-<p>Google runs Javascript scripts in your web explorer to sniff and overrive the save/print events generated by your web explorer. </p>
-<p>So that the core idea here is to prevent it from detecting what you are going to do. That is, disable the Javascript.</p>
-<p>However, Googlers are not idiots. Google Docs pages contain an intergrity check which could detect the condition of Javascript. If you disable JS straightforwardly, it will know and refuse to load the contents for you.</p>
-<h2 id="Here-we-go…"><a href="#Here-we-go…" class="headerlink" title="Here we go…"></a>Here we go…</h2><ol>
-<li>Open the document that you want to download in Safari.</li>
-<li><p>Scroll down slowly to the last page. Make sure that contents of everypage is loaded.</p>
-<blockquote>
-<p> This step is boring and time consuming. However, it is necessary to load the whole document from Google’s database to your local storage.</p>
-<p>If it is a doc with hundreds of pages, it may slow your Mac seriously. But DON’T PANIC!</p>
-<p>Suggestion for Google engineers reading this article: Try focus-oriented loading — I mean, do garbage collection to pages that are not closed to the current focused page. This is a trade-off between security and user-experience. It’s on you :-)</p>
-</blockquote>
-</li>
-<li><p>Wait for all contents to be loaded. Then click the “Save As…” in the “File” menu. See picture.</p>
-<!--    ![SaveAs](/Picture1.png)-->
-<img src="/2018/04/18/Download-Google-Docs/Picture1.png" alt="SaveAs" title="SaveAs">
-<blockquote>
-<p>This step also takes a few minutes. Stay back and relax!</p>
-</blockquote>
-</li>
-<li><p>In the Safari menu, find “Develop” and select as the following picture:</p>
- <!--![Disable](/Picture2.png)-->
- <img src="/2018/04/18/Download-Google-Docs/Picture2.png" alt="Disable" title="Disable">
-<blockquote>
-<p>No, you will not have the “F0rge1cE” row. That’s meeeeeeee!</p>
-</blockquote>
-</li>
-<li><p>Find the webpage saved in step 4. It should be a Web Archive type file. Open it, your are also here!</p>
-</li>
-<li>The system should automatically choose Safari to open the web archive. Check again whether the contents have been fully loaded. If not, repeat step 1-5…</li>
-<li>Simply print the webpage. Do not select “Print headers and footers” unless you wanna show-off.<!--![Print](/Picture3.png)-->
-<img src="/2018/04/18/Download-Google-Docs/Picture3.png" alt="Print" title="Print"></li>
-<li>Enable javascript and Site-specific Hacks.</li>
-</ol>
-<h2 id="The-very-last-step"><a href="#The-very-last-step" class="headerlink" title="The very last step"></a>The very last step</h2><p>The PDF file you get might be doubled in pages. It has an empty page between two actuall document pages. Mac OS provides Automator (workflow) as a built-in tool to deal with such cases. Or you can find other online tools or solution using Google.(Sorry Google!) </p>
-<h2 id="To-End-With…"><a href="#To-End-With…" class="headerlink" title="To End With…"></a>To End With…</h2><p>It is possibile that Google use a blank page to replace the normal contents when detecting a force export/print request. I haven’t go through their javascript source code (It is soooooo long!). This is just a hypothesis from the blank pages generated in the final PDF…</p>
-<p>I appreciate your time for reading. </p>
-<p>This is a tutorial for non-CS people. </p>
-<p>You are welcomed to discuss the tech detail behind the tutorial.</p>
-<hr>
-<p><a rel="external" href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png"></a><br>This work is licensed under a <a rel="external" href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>.</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-
-    <footer class="post-footer">
       
 
       
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/05/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="F0rge1cE">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Avatar.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="The Dirac Sea">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
             
+              <a href="/2018/04/18/Download-Google-Docs/" rel="next" title="Jump Over the Export Restriction of Google Docs">
+                <i class="fa fa-chevron-left"></i> Jump Over the Export Restriction of Google Docs
+              </a>
             
-              
-                
-                <a class="post-title-link" href="/2017/03/05/hello-world/" itemprop="url">
-                  Hello World
-                </a>
-              
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
             
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-05T17:36:20-05:00">
-                2017-03-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
+          </div>
         </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
           
           </div>
@@ -705,6 +438,10 @@
 
 
           
+  <div class="comments" id="comments">
+    
+  </div>
+
 
         </div>
         
@@ -724,8 +461,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/Avatar.jpeg"
@@ -778,6 +524,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0-Python的类变量"><span class="nav-number">1.</span> <span class="nav-text">0. Python的类变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-使用global关键字"><span class="nav-number">2.</span> <span class="nav-text">1. 使用global关键字</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-使用-classmethod装饰器"><span class="nav-number">3.</span> <span class="nav-text">2. 使用@classmethod装饰器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-设计一个callable的类"><span class="nav-number">4.</span> <span class="nav-text">3. 设计一个callable的类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-使用metaclass"><span class="nav-number">5.</span> <span class="nav-text">4. 使用metaclass</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-使用默认参数"><span class="nav-number">6.</span> <span class="nav-text">5. 使用默认参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#EoF"><span class="nav-number">7.</span> <span class="nav-text">EoF</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -883,6 +645,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
 
   
 
