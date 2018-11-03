@@ -250,7 +250,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/04/25/Python-static/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/02/pickle-thread-lock/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="F0rge1cE">
@@ -272,7 +272,134 @@
             
               
                 
-                <a class="post-title-link" href="/2018/04/25/Python-static/" itemprop="url">
+                <a class="post-title-link" href="/2018/11/02/pickle-thread-lock/" itemprop="url">
+                  Resolve `TypeError can't pickle thread.lock objects`
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-11-02T23:58:43-04:00">
+                2018-11-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          This article is for Python 2.7 only. May be incorrect for Python 3.x.
+1. super() should not be referenced.Bad practice:
+1234567class foo(object):	passclass bar(foo):	def __init__(self, a):		self.p = super(bar, self)		self.p.__init__(a)
+This will throw TypeError: can&#39;t pickle thread.lock objects 
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/11/02/pickle-thread-lock/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/04/24/Python-static/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="F0rge1cE">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The Dirac Sea">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2018/04/24/Python-static/" itemprop="url">
                   Python Static 变量和方法
                 </a>
               
@@ -327,49 +454,19 @@
       
         
           
-            <p>Python中并不像Java或者C++一样有原生支持的<strong>static</strong>关键字，那么我们要如何定义一个class的static variable或是static method呢？</p>
-<p>我在Google上搜了一下，结合自己的一些理解，这里给出一些实现static关键字的方式，并且给出了一定的解释。下面的所有代码均在<strong>Python3.6</strong>中调试，2.7中的实现会略有不同。</p>
-<h2 id="0-Python的类变量"><a href="#0-Python的类变量" class="headerlink" title="0. Python的类变量"></a>0. Python的类变量</h2><p>Python类变量的行为类似于Java中的static变量，但是还是有一些小的区别。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span><span class="params">(object)</span>:</span></div><div class="line">	count = <span class="number">1</span></div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">def</span> <span class="title">bar</span><span class="params">(self, x)</span>:</span></div><div class="line">		count += x</div></pre></td></tr></table></figure>
-<p>在上面的代码中，我们的<code>Foo</code>类含有一个类变量<code>count</code>和一个实例变量<code>self.count</code>。类变量是可以直接通过<code>类名.变量名</code>进行访问的，所有该类的实例对象共享这一个变量。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">func1, func2 = Foo(), Foo()</div><div class="line">print(Foo.count)	<span class="comment"># 1</span></div><div class="line">Foo.count += <span class="number">1</span>	</div><div class="line">print(func1.count)	<span class="comment"># 2</span></div><div class="line">Foo.count += <span class="number">1</span> </div><div class="line">print(func2.count)	<span class="comment"># 3</span></div></pre></td></tr></table></figure>
-<p>但是，如果对实例进行类变量的操作，那么会生成一个新的同名实例变量，覆盖掉该对象之前的类变量，导致与预期的static行为不符。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 接着上面的代码</span></div><div class="line">func1.count = <span class="number">55</span>	<span class="comment"># 修改了实例对象，此时实质上在func1对象内部生成了self.count = 55</span></div><div class="line">Foo.count += <span class="number">1</span></div><div class="line">print(func2.count)	<span class="comment"># 4</span></div><div class="line">print(func1.count)	<span class="comment"># 55</span></div><div class="line">Foo.count += <span class="number">1</span></div><div class="line">print(Foo.count)	<span class="comment"># 5</span></div><div class="line">print(func2.count)	<span class="comment"># 5</span></div><div class="line">print(func1.count)	<span class="comment"># 55</span></div></pre></td></tr></table></figure>
-<p><strong>因此，使用Python类变量时要小心，如果想要保持static的行为，实例变量的明明应当与类变量相区分。</strong></p>
-<p>在这顺带也扯一些类内访问控制的东西。众所周知，如果想要一个实例变量或是类变量无法在类的外部被访问，我们可以在变量名前添加两条下划线，例如<code>varName</code>就可以改成<code>__varName</code>。<br>但是实际上，我们仍然可以从类的外部进行访问。。。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span><span class="params">(object)</span>:</span></div><div class="line">	<span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, x)</span>:</span></div><div class="line">		self.__count = x</div><div class="line"></div><div class="line">obj = Foo(<span class="number">5</span>)</div><div class="line">print(obj.__count)	<span class="comment"># AttributeError: type object 'Foo' has no attribute '__count'</span></div><div class="line"></div><div class="line">print(obj._Foo__count)	<span class="comment"># 5... success!</span></div></pre></td></tr></table></figure>
-<p>可以使用形如<code>实例名._类名__变量名</code>的方式来访问受控制的类内变量。</p>
-<p>（最好别这么做，这样做的行为是不可预知的，况且别人已经明确了不想给你看…）</p>
-<h2 id="1-使用global关键字"><a href="#1-使用global关键字" class="headerlink" title="1. 使用global关键字"></a>1. 使用global关键字</h2><p>Python中的<strong><code>global</code></strong>关键字表示声明的变量是当前module的全局变量。</p>
-<p>注意：global变量并<strong>不是</strong>当前Python进程(process)中的全局变量！</p>
-<p><strong><code>@property</code></strong>装饰器可以将类中的方法包装成为类的属性，在类定义的对象中外部调用方法时，可以直接采用类似于获取对象的语句: <code>obj.attr</code></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">_count = <span class="number">0</span></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span><span class="params">(object)</span>:</span></div><div class="line">	<span class="function"><span class="keyword">def</span> <span class="title">bar</span><span class="params">(self, x)</span>:</span></div><div class="line">		<span class="keyword">global</span> _count</div><div class="line">		<span class="keyword">for</span> _ <span class="keyword">in</span> range(x):</div><div class="line">				_count += <span class="number">1</span></div><div class="line">				</div><div class="line"><span class="meta">	@property</span></div><div class="line">	<span class="function"><span class="keyword">def</span> <span class="title">count</span><span class="params">(self)</span>:</span></div><div class="line">		<span class="keyword">global</span> _count</div><div class="line">		<span class="keyword">return</span> _count</div><div class="line">	</div><div class="line"><span class="comment">######				</span></div><div class="line"><span class="comment"># Test</span></div><div class="line">c1, c2, c3 = Foo(), Foo(), Foo()</div><div class="line">print(c1._count)	<span class="comment"># 0</span></div><div class="line">c1.bar(<span class="number">2</span>)</div><div class="line">print(c2._count)	<span class="comment"># 2</span></div><div class="line">c2.bar(<span class="number">3</span>)</div><div class="line">print(c3._count)	<span class="comment"># 5</span></div></pre></td></tr></table></figure>
-<p>上面的测试输出中可以看到，对于不同的实例对象，他们的<code>count</code>属性（通过使用<code>@property</code>装饰器包装<code>count()</code>方法模拟）指向的是同一个类变量。</p>
-<p>如果我们像像Java一样对类名直接调用方法，我们可以使用如下的方式：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Foo.bar(Foo, <span class="number">2</span>)</div><div class="line">print(Foo().count)	<span class="comment"># 2</span></div><div class="line">Foo.bar(Foo, <span class="number">2</span>)</div><div class="line">print(Foo().count)	<span class="comment"># 4</span></div><div class="line">Foo.bar(Foo, <span class="number">2</span>)</div><div class="line"></div><div class="line">print(Foo.count)	<span class="comment"># &lt;property object at some_addr&gt;</span></div></pre></td></tr></table></figure>
-<h2 id="2-使用-classmethod装饰器"><a href="#2-使用-classmethod装饰器" class="headerlink" title="2. 使用@classmethod装饰器"></a>2. 使用@classmethod装饰器</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span><span class="params">(object)</span>:</span></div><div class="line">		_count = <span class="number">0</span></div><div class="line"><span class="meta">		@classmethod</span></div><div class="line">		<span class="function"><span class="keyword">def</span> <span class="title">bar</span><span class="params">(cls, x)</span>:</span></div><div class="line">			<span class="keyword">for</span> _ <span class="keyword">in</span> range(x):</div><div class="line">				cls. _count += <span class="number">1</span></div><div class="line">	</div><div class="line"><span class="comment">######				</span></div><div class="line"><span class="comment"># Test</span></div><div class="line">c1, c2, c3 = Foo(), Foo(), Foo()</div><div class="line">print(c1._count)	<span class="comment"># 0</span></div><div class="line">c1.bar(<span class="number">2</span>)</div><div class="line">print(c2._count)	<span class="comment"># 2</span></div><div class="line">c2.bar(<span class="number">3</span>)</div><div class="line">print(c3._count)	<span class="comment"># 5</span></div><div class="line"></div><div class="line">Foo.bar(<span class="number">1</span>)	<span class="comment"># 6</span></div><div class="line">Foo.bar(<span class="number">2</span>)	<span class="comment"># 8</span></div><div class="line">Foo.bar(<span class="number">3</span>)	<span class="comment"># 11</span></div></pre></td></tr></table></figure>
-<p>这种方法相比于方法1要更为简洁，而且相当于<code>@classmethod</code>装饰器已经为我们完成了大部分的封装。我们可以直接通过类名来调用对应的方法。但是<code>_count</code>变量在这里是可以被外部直接修改的，使用如<code>Foo._count = 12</code>这样的语句即可。</p>
-<p>在这里也可以使用<code>@staticmethod</code>装饰器，它跟<code>@classmethod</code>的区别可以参考<a href="https://www.cnblogs.com/2gua/archive/2012/09/03/2668125.html" target="_blank" rel="external">这篇文章</a>。</p>
-<p>这种实现存在的问题是，<code>_count</code>本质上仍然是类的成员变量，如果直接手动修改每个对象的<code>_count</code>变量，那么<code>_count</code>的行为与预期的static是不符的。在Java中，static变量是与类绑定的，修改任意一个实例的static变量，其变化都会反映在所有该类的对象上。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">c1, c2= Foo(), Foo()</div><div class="line">c1._count = <span class="number">12</span></div><div class="line">print(c1._count)	<span class="comment"># 12</span></div><div class="line">print(c2._count)	<span class="comment"># 0 &lt;----- bad behavior!</span></div></pre></td></tr></table></figure>
-<h2 id="3-设计一个callable的类"><a href="#3-设计一个callable的类" class="headerlink" title="3. 设计一个callable的类"></a>3. 设计一个callable的类</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span><span class="params">(object)</span>:</span></div><div class="line">	<span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></div><div class="line">		 self._count = <span class="number">0</span></div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">def</span> <span class="title">__call__</span><span class="params">(self, x)</span>:</span></div><div class="line">		<span class="keyword">for</span> _ <span class="keyword">in</span> range(x):</div><div class="line">			self. _count += <span class="number">1</span></div><div class="line">		print(self._count)</div><div class="line"></div><div class="line">func1 = Foo()</div><div class="line">func1(<span class="number">1</span>)	<span class="comment"># 1</span></div><div class="line">func1(<span class="number">2</span>)	<span class="comment"># 3</span></div><div class="line">func1(<span class="number">3</span>)	<span class="comment"># 6</span></div><div class="line"></div><div class="line">func2 = Foo()</div><div class="line">func2(<span class="number">1</span>)	<span class="comment"># 1</span></div><div class="line">func2(<span class="number">2</span>)	<span class="comment"># 3</span></div><div class="line">func2(<span class="number">3</span>)	<span class="comment"># 6</span></div></pre></td></tr></table></figure>
-<p>这种方法实质上是将类包装成了一个可调用的方法。也就是说，当我们调用默认的constructor(<code>__init(self</code>)时，生成的其实是一个可调用的函数对象。而这个函数对象的行为则在<code>__call(self,x)__</code>中定义了。每次我们调用这个constructor，返回的都是<strong>不同</strong>的函数对象。</p>
-<p>因此，从原理上来看这种方法有着与前面方法2一样的问题。不同实例对象的类变量依然是独立的。</p>
-<p><strong>因此，这种方式仅适合实现static类方法。</strong></p>
-<h2 id="4-使用metaclass"><a href="#4-使用metaclass" class="headerlink" title="4. 使用metaclass"></a>4. 使用metaclass</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Callable</span><span class="params">(type)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__call__</span><span class="params">(self, *args, **kw)</span>:</span></div><div class="line">        <span class="keyword">return</span> self._call(*args, **kw)</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">yourfunc</span><span class="params">(object)</span>:</span></div><div class="line">    __metaclass__ = Callable</div><div class="line"></div><div class="line">    _numer_of_times = <span class="number">0</span></div><div class="line"></div><div class="line"><span class="meta">    @classmethod</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_call</span><span class="params">(cls, x, y)</span>:</span></div><div class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(x):</div><div class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> range(y):                 </div><div class="line">                cls._number_of_time += <span class="number">1</span></div></pre></td></tr></table></figure>
-<p>这种方法是在网上看到的，大部分开发过程中并不会用到metaclass这样的特性，因此看看就好了。。。</p>
-<h2 id="5-使用默认参数"><a href="#5-使用默认参数" class="headerlink" title="5. 使用默认参数"></a>5. 使用默认参数</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span><span class="params">(object)</span>:</span></div><div class="line">	<span class="function"><span class="keyword">def</span> <span class="title">bar</span><span class="params">(cls, x, _static_var=[<span class="number">0</span>])</span>:</span></div><div class="line">		<span class="keyword">for</span> i <span class="keyword">in</span> range(x):</div><div class="line">			_static_var[<span class="number">0</span>] += <span class="number">1</span></div><div class="line">		print(_static_var[<span class="number">0</span>])</div><div class="line"></div><div class="line"><span class="comment"># Python 3.6		</span></div><div class="line">Foo.bar(Foo, <span class="number">1</span>)	<span class="comment"># 1</span></div><div class="line">Foo.bar(Foo, <span class="number">2</span>)	<span class="comment"># 3</span></div><div class="line">Foo.bar(Foo, <span class="number">3</span>)	<span class="comment"># 6</span></div><div class="line"></div><div class="line"><span class="comment"># Python 2.7</span></div><div class="line"><span class="comment"># It takes 'cls' the same as 'self', so it requires an instance.</span></div><div class="line"><span class="comment"># Foo.bar(Foo(), 1)	# 1</span></div><div class="line"><span class="comment"># Foo.bar(Foo(), 2)	# 3</span></div><div class="line"><span class="comment"># Foo.bar(Foo(), 3)	# 6</span></div><div class="line"></div><div class="line">a, b = Foo(), Foo()</div><div class="line">a.bar(<span class="number">4</span>)	<span class="comment"># 10</span></div><div class="line">b.bar(<span class="number">5</span>)	<span class="comment"># 15</span></div></pre></td></tr></table></figure>
-<p>这种方法是最tricky的。这种做法的原理在于：函数的默认参数只在module被载入(load)时初始化一次， 所以在一个module中，同一个函数的同一个默认参数都指向同一个内存中的对象。我们在实例代码中令默认参数<code>_static_var</code>指向了一个list对象。在程序的生命周期中，该引用的指向没有变化，因此每次更新都会反映在整个类及所有该类的对象中。</p>
-<h2 id="EoF"><a href="#EoF" class="headerlink" title="EoF"></a>EoF</h2><p>其实看到这个问题，我的第一想法是用闭包(closure)来实现。但是在Google上看了一下似乎没人这么做。Python的设计哲学是能用一种方法解决的事，就不要反复造不同花式的轮子来做。但是static这个轮子，不知为什么语言的设计者没有考虑，我个人的猜想可能是与Python的解释运行模式有关?</p>
-<p>References:</p>
-<ol>
-<li><a href="https://www.cnblogs.com/2gua/archive/2012/09/03/2668125.html" target="_blank" rel="external">https://www.cnblogs.com/2gua/archive/2012/09/03/2668125.html</a></li>
-<li><a href="https://stackoverflow.com/questions/26630821/static-variable-in-python" target="_blank" rel="external">https://stackoverflow.com/questions/26630821/static-variable-in-python</a></li>
-</ol>
-<hr>
-<p><a rel="external" href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png"></a><br>This work is licensed under a <a rel="external" href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>.</p>
-
-          
+          Python中并不像Java或者C++一样有原生支持的static关键字，那么我们要如何定义一个class的static variable或是static method呢？
+我在Google上搜了一下，结合自己的一些理解，这里给出一些实现static关键字的方式，并且给出了一定的解释。下面的所有代码均在Python3.6中调试，2.7中的实现会略有不同。
+0. Python的类变量Python类变量的行为类似于Java中的static变量，但是还是有一些小的区别。
+12345class Foo(object):	count = 1	def bar(self, x):		count += x
+在
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/04/24/Python-static/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -485,61 +582,154 @@
       
         
           
-            <!--# Jump Over the Export Restriction of Google Docs
--->
-<p><strong>Disclaimer: This article is for technical exchanges only. The author is not responsible for any kind of misusage or copyright infringement.</strong></p>
-<p>This is a simple step-by-step tutorial that helps you to generate <strong>PDF</strong> version of Google Docs that are set not to be exported.</p>
-<h2 id="Prerequisites"><a href="#Prerequisites" class="headerlink" title="Prerequisites:"></a>Prerequisites:</h2><ul>
-<li>Mac OS with Safari installed (Not tested on Windows or Linux)</li>
-<li><strong>No</strong> programming or computer background required.</li>
-</ul>
-<h2 id="What-happened-amp-Why"><a href="#What-happened-amp-Why" class="headerlink" title="What happened &amp; Why"></a>What happened &amp; Why</h2><p>Google Docs allows the file owners set their not to be exported. Such file will not be able to save/print/export in a normal approach.</p>
-<!--![setting](/Picture4.png)
--->
-<img src="/2018/04/18/Download-Google-Docs/Picture4.png" alt="setting" title="setting">
-<p>I have seen many people taking screenshots instead. Obviously it is the worst solution to this problem. For example, you cannot perform searching, selecting or copying/pasting on pictures.</p>
-<p>Google runs Javascript scripts in your web explorer to sniff and overrive the save/print events generated by your web explorer. </p>
-<p>So that the core idea here is to prevent it from detecting what you are going to do. That is, disable the Javascript.</p>
-<p>However, Googlers are not idiots. Google Docs pages contain an intergrity check which could detect the condition of Javascript. If you disable JS straightforwardly, it will know and refuse to load the contents for you.</p>
-<h2 id="Here-we-go…"><a href="#Here-we-go…" class="headerlink" title="Here we go…"></a>Here we go…</h2><ol>
-<li>Open the document that you want to download in Safari.</li>
-<li><p>Scroll down slowly to the last page. Make sure that contents of everypage is loaded.</p>
-<blockquote>
-<p> This step is boring and time consuming. However, it is necessary to load the whole document from Google’s database to your local storage.</p>
-<p>If it is a doc with hundreds of pages, it may slow your Mac seriously. But DON’T PANIC!</p>
-<p>Suggestion for Google engineers reading this article: Try focus-oriented loading — I mean, do garbage collection to pages that are not closed to the current focused page. This is a trade-off between security and user-experience. It’s on you :-)</p>
-</blockquote>
-</li>
-<li><p>Wait for all contents to be loaded. Then click the “Save As…” in the “File” menu. See picture.</p>
-<!--    ![SaveAs](/Picture1.png)-->
-<img src="/2018/04/18/Download-Google-Docs/Picture1.png" alt="SaveAs" title="SaveAs">
-<blockquote>
-<p>This step also takes a few minutes. Stay back and relax!</p>
-</blockquote>
-</li>
-<li><p>In the Safari menu, find “Develop” and select as the following picture:</p>
- <!--![Disable](/Picture2.png)-->
- <img src="/2018/04/18/Download-Google-Docs/Picture2.png" alt="Disable" title="Disable">
-<blockquote>
-<p>No, you will not have the “F0rge1cE” row. That’s meeeeeeee!</p>
-</blockquote>
-</li>
-<li><p>Find the webpage saved in step 4. It should be a Web Archive type file. Open it, your are also here!</p>
-</li>
-<li>The system should automatically choose Safari to open the web archive. Check again whether the contents have been fully loaded. If not, repeat step 1-5…</li>
-<li>Simply print the webpage. Do not select “Print headers and footers” unless you wanna show-off.<!--![Print](/Picture3.png)-->
-<img src="/2018/04/18/Download-Google-Docs/Picture3.png" alt="Print" title="Print"></li>
-<li>Enable javascript and Site-specific Hacks.</li>
-</ol>
-<h2 id="The-very-last-step"><a href="#The-very-last-step" class="headerlink" title="The very last step"></a>The very last step</h2><p>The PDF file you get might be doubled in pages. It has an empty page between two actuall document pages. Mac OS provides Automator (workflow) as a built-in tool to deal with such cases. Or you can find other online tools or solution using Google.(Sorry Google!) </p>
-<h2 id="To-End-With…"><a href="#To-End-With…" class="headerlink" title="To End With…"></a>To End With…</h2><p>It is possibile that Google use a blank page to replace the normal contents when detecting a force export/print request. I haven’t go through their javascript source code (It is soooooo long!). This is just a hypothesis from the blank pages generated in the final PDF…</p>
-<p>I appreciate your time for reading. </p>
-<p>This is a tutorial for non-CS people. </p>
-<p>You are welcomed to discuss the tech detail behind the tutorial.</p>
-<hr>
-<p><a rel="external" href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png"></a><br>This work is licensed under a <a rel="external" href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>.</p>
+          
+Disclaimer: This article is for technical exchanges only. The author is not responsible for any kind of misusage or copyright infringement.
+This is a simple step-by-step tutorial that helps you to generate PDF version of Google Docs that are set not to be exported.
+Prerequisites:
+Mac OS with Safari
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/04/18/Download-Google-Docs/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/05/First/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="F0rge1cE">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The Dirac Sea">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/03/05/First/" itemprop="url">
+                  First
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-05T17:57:17-05:00">
+                2017-03-05
+              </time>
+            
+
+            
+
+            
+          </span>
 
           
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          Mac hexo
+Where am I?
+???
+ I give up.
+
+强调一下 *和文字间不能有空格
+这样也可以
+斜体也可以强调,空一行才能换行！
+My blog is The Dirac Sea
+print &quot;hello world!&quot;
+
+
+          
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/03/05/First/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -655,17 +845,19 @@
       
         
           
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
-
-          
+          Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.
+Quick StartCreate a new post1$ hexo new "My New Post"
+More info: Writing
+Run server1$ hexo server
+More in
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/03/05/hello-world/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -740,7 +932,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-count">5</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
